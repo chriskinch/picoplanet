@@ -1,20 +1,28 @@
-ENGINE.Factory = function(args) {
+ENGINE.Building = function(args) {
 
   _.extend(this, {
     states:['selectable', 'draggable', 'dragging', 'snappable'],
+    rate: 3000,
   }, args);
 
 };
 
-ENGINE.Factory.prototype = {
+ENGINE.Building.prototype = {
 
   step: function(delta) {
-    //if(this.snaps.mouseover) console.log("over");
+    if(utils.hasArrayItem(this.states, 'snapped')) {
+      this.rate -= delta;
+
+      if(this.rate <= 0) {
+        console.log("tick");
+        this.rate = 3000;
+      }
+    }
   },
 
   render: function(delta) {
     app.layer
-      .fillStyle("#ff2222")
+      .fillStyle(this.fill)
       .fillRect(this.x, this.y, this.width, this.height);
       //.setOrigin("center", "center");
   },

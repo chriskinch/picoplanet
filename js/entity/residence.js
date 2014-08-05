@@ -1,25 +1,22 @@
-ENGINE.Gui = function(args) {
+ENGINE.Residence = function(args) {
 
   _.extend(this, {
-    width: 20,
-    height: 20,
-    radius: 10,
-    states:['selectable'],
+    states:['selectable', 'draggable', 'dragging', 'snappable'],
   }, args);
 
 };
 
-ENGINE.Gui.prototype = {
+ENGINE.Residence.prototype = {
 
   step: function(delta) {
-    
+    //if(this.snaps.mouseover) console.log("over");
   },
 
   render: function(delta) {
     app.layer
-      .fillStyle(this.fill)
-      .closedcircle(this.x, this.y, this.radius)
-      .fill();
+      .fillStyle("#2222ff")
+      .fillRect(this.x, this.y, this.width, this.height);
+      //.setOrigin("center", "center");
   },
 
   remove: function() {

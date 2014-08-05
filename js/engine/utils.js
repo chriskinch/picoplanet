@@ -5,22 +5,29 @@ var utils = {
 		return angle;
 	},
 
-	/*
-	 * Checks if the mouse is over a certain entity.
-	 */
-	contains: function(x, y, entity) {
-		var width = (arguments[3].length > 1) ? arguments[3][0]/2 : arguments[3][0],
-			height = (arguments[3].length > 1) ? arguments[3][1]/2 : arguments[3][0],
-			box = [entity.x-width, entity.x+width, entity.y-height, entity.y+height];
+	hasArrayItem: function(array, string) {
+		var index = array.indexOf(string);
+		if(index > -1) return true;
+	},
 
-		if(box && x >= box[0] && x <= box[1] && y >= box[2] && y <= box[3]) {
-			return true;
-		} 
-	}, 
+	setArrayItem: function(array, string, state) {
+		var index = array.indexOf(string);
+		if(index == -1 && state === true) array.push(string);
+		if(index > -1 && state === false) array.splice(index, 1);
+		return array;
+	},
 
-	hover: function(entity, x, y) {
-		var box = [entity.x-entity.width/2, entity.x+entity.width/2, entity.y-entity.height/2, entity.y+entity.height/2];
-		var hit = (box && x >= box[0] && x <= box[1] && y >= box[2] && y <= box[3]) ? true : false;
-		entity.mouseover = hit;
+	arrangeToArc: function(array, target) {
+		var radius = target.radius;
+		var angle = (360/array.length) * (Math.PI/180);
+
+		_.each(array, function(value, key){
+		  var segment = angle*key;
+		  var x = Math.cos(segment) * target.radius;
+		  var y = Math.sin(segment) * target.radius;
+		  value.x = target.x + x;
+		  value.y = target.y + y;
+		});
 	}
+
 };

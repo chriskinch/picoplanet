@@ -13,9 +13,9 @@ ENGINE.Application = function(args) {
   /* bind events to the application - you will understand it later */
   eveline(this);
 
-  /* create loader and assets manager */  
+  /* create loader and assets manager */
   this.loader = new ENGINE.Loader();
-  this.assets = new ENGINE.Assets(this.loader); 
+  this.assets = new ENGINE.Assets(this.loader);
 
   this.oncreate();
 
@@ -26,13 +26,12 @@ ENGINE.Application = function(args) {
 
 };
 
-ENGINE.Application.prototype = { 
+ENGINE.Application.prototype = {
 
-  /* call the method in current scene with given arguments 
+  /* call the method in current scene with given arguments
        use to pass the event to the current scene
   */
   dispatch: function(method) {
-    //console.log(this.scene);
     if (this.scene && this.scene[arguments[0]]) this.scene[arguments[0]].apply(this.scene, Array.prototype.slice.call(arguments, 1));
   },
 

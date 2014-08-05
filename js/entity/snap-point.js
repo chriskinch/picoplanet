@@ -1,21 +1,33 @@
-ENGINE.Gui = function(args) {
+ENGINE.SnapPoint = function(args) {
 
   _.extend(this, {
-    width: 20,
-    height: 20,
-    radius: 10,
-    states:['selectable'],
+    width: 50,
+    height: 50,
+    radius: 5,
+    snappoint: true,
+    snapdistance: 25,
+    states:[],
+    fill: '#444444'
   }, args);
 
 };
 
-ENGINE.Gui.prototype = {
+ENGINE.SnapPoint.prototype = {
+  create: function() {
+
+  },
 
   step: function(delta) {
-    
+    //console.log(utils.mousexy());
   },
 
   render: function(delta) {
+
+    // app.layer
+    //   .fillStyle('rgba(255, 255, 255, 0.1)')
+    //   .closedcircle(this.x, this.y, this.radius*5)
+    //   .fill();
+
     app.layer
       .fillStyle(this.fill)
       .closedcircle(this.x, this.y, this.radius)
