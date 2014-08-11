@@ -6,6 +6,7 @@ var utils = {
 	},
 
 	hasArrayItem: function(array, string) {
+		//console.log(array);
 		var index = array.indexOf(string);
 		if(index > -1) return true;
 	},

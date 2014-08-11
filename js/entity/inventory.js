@@ -1,15 +1,16 @@
-ENGINE.Gui = function(args) {
+ENGINE.Inventory = function(args) {
 
   _.extend(this, {
     width: 20,
     height: 20,
     radius: 10,
-    states:['selectable'],
+    selectable: true,
+    states:[],
   }, args);
 
 };
 
-ENGINE.Gui.prototype = {
+ENGINE.Inventory.prototype = {
 
   step: function(delta) {
     

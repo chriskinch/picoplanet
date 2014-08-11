@@ -81,35 +81,18 @@ _.extend(ENGINE.Collection.prototype, {
     }
   },
 
-  state: function(entity, string, state) {  
-    if(state !== undefined && entity.states) {
-      entity.states = utils.setArrayItem(entity.states, string, state);
-    }
-
-    if(entity.states) {
-      return utils.hasArrayItem(entity.states, string);
-    }
-  },
-
-  // hover: function(entity, x, y) {
-  //   var box = [entity.x-entity.width/2, entity.x+entity.width/2, entity.y-entity.height/2, entity.y+entity.height/2];
-  //   var hit = (box && x >= box[0] && x <= box[1] && y >= box[2] && y <= box[3]) ? true : false;
-  //   entity.mouseover = hit;
-  // },
-
   ismouseover: function(x, y) {
     for(var i=0; i < this.length; i++){
         var box = [this[i].x-this[i].width/2, this[i].x+this[i].width/2, this[i].y-this[i].height/2, this[i].y+this[i].height/2];
         var hover = (box && x >= box[0] && x <= box[1] && y >= box[2] && y <= box[3]) ? true : false;
-        this.state(this[i], 'mouseover', hover);
-        if(hover) this[i];
+        this.parent.state(this[i], 'mouseover', hover);
     }
   },
 
-  issnap: function(x, y) {
+  issnapped: function(x, y) {
     var dx, dy, distance, entity;
     for(var i=0; i < this.length; i++){
-      if(this.state(this[i], 'dragging')) entity = this[i];
+      if(this.parent.state(this[i], 'dragging')) entity = this[i];
 
       if(this[i].snappoint !== undefined) {
         dx = x - this[i].x;
@@ -119,11 +102,8 @@ _.extend(ENGINE.Collection.prototype, {
 
       if(distance < this[i].snapdistance) {
         for(var j=0; j < this.length; j++){
-          if(this.state(this[j], 'dragging')) {
-            this.state(this[j], 'dragging', false);
-            this.state(this[j], 'snapped', true);
-            this[j].x = this[i].x - this[j].width/2;
-            this[j].y = this[i].y - this[j].height/2;
+          if(this.parent.state(this[j], 'dragging')) {
+            this.snap(this[j], this[i], x, y);
           }
         }
       }
@@ -131,26 +111,34 @@ _.extend(ENGINE.Collection.prototype, {
 
   },
 
+  snap: function(entity, snappoint, x, y) {
+    this.parent.state(entity, 'dragging', false);
+    this.parent.state(entity, 'snapped', true);
+    entity.x = snappoint.x - entity.width/2;
+    entity.y = snappoint.y - entity.height/2;
+  },
+
   select: function(button){
     for (var i = 0; i < this.length; i++) {
-      if(button === 0 && this.state(this[i], 'draggable') && this.state(this[i], 'mouseover')) {
-        this.state(this[i], 'dragging', true);
+      if(button === 0 && this[i].draggable === true && this.parent.state(this[i], 'mouseover')) {
+        
+        this.parent.state(this[i], 'dragging', true);
       }
     }
   },
 
   drag: function(x, y) {
     for(var i=0; i < this.length; i++){
-      if(this.state(this[i], 'dragging')) {
+      if(this.parent.state(this[i], 'dragging')) {
         this[i].x = x - this[i].height/2;
         this[i].y = y - this[i].width/2;
       }
     }
   },
 
-  drop:function(x, y) {
+  drop: function(x, y) {
     for(var i=0; i < this.length; i++){
-      this.state(this[i], 'dragging', false);
+      this.parent.state(this[i], 'dragging', false);
     }
   }
 

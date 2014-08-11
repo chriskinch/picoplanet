@@ -2,34 +2,46 @@ app.game = new ENGINE.Scene({
 
   oncreate: function() {
     this.snappoints = [];
+    this.credit = 30;
+    this.power = 0;
+    this.population = 0;
+    this.defence = 0;
 
     this.entities = new ENGINE.Collection(this);
   },
 
   onenter: function() {
-    this.gui = {};
-    this.gui.factory = this.entities.add(ENGINE.Gui, {
+    this.inv_factory = this.entities.add(ENGINE.Inventory, {
       x: 20,
       y: 20,
       fill: '#993333',
     });
-    this.gui.residence = this.entities.add(ENGINE.Gui, {
+    this.factory = [];
+
+    this.inv_residence = this.entities.add(ENGINE.Inventory, {
       x: 20,
       y: 50,
       fill: '#339900',
     });
-    this.gui.defences = this.entities.add(ENGINE.Gui, {
+    this.residence = [];
+
+    this.inv_defences = this.entities.add(ENGINE.Inventory, {
       x: 20,
       y: 80,
       fill: '#999933',
     });
+    this.defences = [];
+
     this.world = this.entities.add(ENGINE.World);
 
     this.entities.call("create");
 
     /* create gui */
-    var gui = new dat.GUI();
-    //gui.add(this.world, 'speed', 1, 30).step(1);
+    this.gui = new dat.GUI();
+    this.gui.add(this, 'credit', 0).listen();
+    this.gui.add(this, 'power', 0).listen();
+    this.gui.add(this, 'population', 0).listen();
+    this.gui.add(this, 'defence', 0).listen();
   },
 
   onstep: function(delta) {
@@ -44,14 +56,20 @@ app.game = new ENGINE.Scene({
 
   onmousedown: function(x, y, button) {
     this.entities.select(button);
-    if(this.entities.state(this.gui.factory, 'mouseover')) this.spawnBuilding('factory', x, y);
-    if(this.entities.state(this.gui.residence, 'mouseover')) this.spawnBuilding('residence', x, y);
-    if(this.entities.state(this.gui.defences, 'mouseover')) this.spawnBuilding('defences', x, y);
+    if(this.state(this.inv_factory, 'mouseover')) {
+      this.spawnBuilding('Factory', x, y);
+    }
+    if(this.state(this.inv_residence, 'mouseover')) {
+      this.spawnBuilding('Residence', x, y);
+    }
+    if(this.state(this.inv_defences, 'mouseover')) {
+      this.spawnBuilding('Defences', x, y);
+    }
   },
 
   onmousemove: function(x, y) {
     this.entities.ismouseover(x, y);
-    this.entities.issnap(x, y);
+    this.entities.issnapped(x, y);
     this.entities.drag(x, y);
   },
 
@@ -59,23 +77,22 @@ app.game = new ENGINE.Scene({
     this.entities.drop(x, y);
   },
 
+  state: function(entity, string, state) {  
+    if(state !== undefined && entity.states) {
+      entity.states = utils.setArrayItem(entity.states, string, state);
+    }
+
+    if(entity.states) {
+      return utils.hasArrayItem(entity.states, string);
+    }
+  },
+
   spawnBuilding: function(type, x, y) {
+    var constructor = ENGINE[type]; 
+    var name = type.toLowerCase();
     var width = height = 20;
-    this[type] = this.entities.add(ENGINE.Building, {
-      x: this.gui[type].x - width/2,
-      y: this.gui[type].y - height/2,
-      width: width,
-      height: height,
-      fill: this.gui[type].fill,
-    });
+    var building = this.entities.add(constructor);
+    this[name].push(building);
   },
-
-  spawnFactory: function(x, y, button) {
-
-  },
-
-  spawnResidence: function(x, y, button) {
-
-  }
 
 });

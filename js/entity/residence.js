@@ -1,22 +1,58 @@
 ENGINE.Residence = function(args) {
 
   _.extend(this, {
-    states:['selectable', 'draggable', 'dragging', 'snappable'],
+    x: app.game.inv_residence.x - 10,
+    y: app.game.inv_residence.y - 10,
+    width: 20,
+    height: 20,
+    fill: app.game.inv_residence.fill,
+    rate: 3000,
+    cooldown: 3000,
+    cost: 5,
+    build: 1000,
+    constructed: 0,
+    selectable: true,
+    draggable: true,
+    snappable: true,
+    states:['dragging'],
   }, args);
 
 };
 
 ENGINE.Residence.prototype = {
 
+  gather: function(delta) {
+    this.rate -= delta;
+
+    if(this.rate <= 0) {
+      app.game.population += 1;
+      this.rate = this.cooldown;
+    }
+  },
+
+  construction: function(delta) {
+    app.game.credit -= this.cost;
+    this.cost = 0;
+    if(this.constructed < this.build) {
+      this.constructed += 1;
+    }
+  },
+
   step: function(delta) {
-    //if(this.snaps.mouseover) console.log("over");
+    this.cap = app.game.residence.length;
+    if(utils.hasArrayItem(this.states, 'snapped') && app.game.population < this.cap ) {
+      this.construction(delta);
+      var build_percent = this.constructed/this.build * 100;
+      if(build_percent >= 100) {
+        this.gather(delta);
+      }
+    }
   },
 
   render: function(delta) {
     app.layer
-      .fillStyle("#2222ff")
+      .fillStyle(this.fill)
       .fillRect(this.x, this.y, this.width, this.height);
-      //.setOrigin("center", "center");
   },
 
   remove: function() {

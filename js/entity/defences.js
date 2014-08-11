@@ -1,14 +1,14 @@
-ENGINE.Factory = function(args) {
+ENGINE.Defences = function(args) {
 
   _.extend(this, {
-    x: app.game.inv_factory.x - 10,
-    y: app.game.inv_factory.y - 10,
+    x: app.game.inv_defences.x - 10,
+    y: app.game.inv_defences.y - 10,
     width: 20,
     height: 20,
-    fill: app.game.inv_factory.fill,
-    rate: 3000,
-    cooldown: 3000,
-    cost: 10,
+    fill: app.game.inv_defences.fill,
+    rate: 4000,
+    cooldown: 4000,
+    cost: 20,
     build: 1000,
     constructed: 0,
     selectable: true,
@@ -19,13 +19,12 @@ ENGINE.Factory = function(args) {
 
 };
 
-ENGINE.Factory.prototype = {
-
+ENGINE.Defences.prototype = {
   gather: function(delta) {
     this.rate -= delta;
 
     if(this.rate <= 0) {
-      app.game.credit += 1;
+      app.game.defence += 1;
       this.rate = this.cooldown;
     }
   },
@@ -39,7 +38,8 @@ ENGINE.Factory.prototype = {
   },
 
   step: function(delta) {
-    if(utils.hasArrayItem(this.states, 'snapped')) {
+    this.cap = app.game.defences.length;
+    if(utils.hasArrayItem(this.states, 'snapped') && app.game.defence < this.cap ) {
       this.construction(delta);
       var build_percent = this.constructed/this.build * 100;
       if(build_percent >= 100) {

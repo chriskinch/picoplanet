@@ -1,7 +1,6 @@
 ENGINE.World = function(args) {
 
   _.extend(this, {
-    name: 'world',
     x: app.width/2,
     y: app.height/2,
     image: app.assets.image("circle"),
