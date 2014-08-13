@@ -39,7 +39,7 @@ ENGINE.Residence.prototype = {
   },
 
   step: function(delta) {
-    this.cap = app.game.residence.length;
+    this.cap = app.game.residence.length * 3;
     if(utils.hasArrayItem(this.states, 'snapped') && app.game.population < this.cap ) {
       this.construction(delta);
       var build_percent = this.constructed/this.build * 100;

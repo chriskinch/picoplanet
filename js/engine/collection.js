@@ -31,7 +31,7 @@ _.extend(ENGINE.Collection.prototype, {
   /* remove dead bodies so they don't drain CPU lying around */
   clean: function() {
 
-    for(var i=0; i < this.length; i++){
+    for(var i=0, len=this.length; i < len; i++){
       if (this[i]._remove) {
         this.splice(i--, 1);
         len--;

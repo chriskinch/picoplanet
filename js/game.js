@@ -1,11 +1,15 @@
 app.game = new ENGINE.Scene({
 
   oncreate: function() {
+    this.time = 0;
     this.snappoints = [];
     this.credit = 30;
     this.power = 0;
     this.population = 0;
     this.defence = 0;
+    this.round = 1;
+    this.enemy_count = 0;
+    this.buildings = [];
 
     this.entities = new ENGINE.Collection(this);
   },
@@ -47,6 +51,13 @@ app.game = new ENGINE.Scene({
   onstep: function(delta) {
     this.entities.step(delta);
     this.entities.call("step", delta);
+
+    // game clock in seconds
+    this.time += delta / 1000;
+    if(this.time > 1 && this.enemy_count < this.round) {
+      this.enemy = this.entities.add(ENGINE.Enemy);
+      this.enemy_count++;
+    }
   },
 
   onrender: function(delta) {
@@ -75,6 +86,7 @@ app.game = new ENGINE.Scene({
 
   onmouseup: function(x, y) {
     this.entities.drop(x, y);
+    this.dragging = false;
   },
 
   state: function(entity, string, state) {  
@@ -92,7 +104,8 @@ app.game = new ENGINE.Scene({
     var name = type.toLowerCase();
     var width = height = 20;
     var building = this.entities.add(constructor);
-    this[name].push(building);
+    this.buildings.push(building);
+    this.dragging = true;
   },
 
 });

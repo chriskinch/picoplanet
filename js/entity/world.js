@@ -9,7 +9,8 @@ ENGINE.World = function(args) {
     radius: 100,
     speed: 1,
     cycle: 0,
-    snapcount: 10,
+    fill: '#55dd44',
+    snapcount: 12,
     snappoints: [],
   }, args);
 
@@ -27,10 +28,12 @@ ENGINE.World.prototype = {
   render: function(delta) {
 
     app.layer
-      .save()
-      .translate(this.x, this.y)
-      .drawImage(this.image, -this.width/2, -this.height/2, this.width, this.height)
-      .restore();
+      //.save()
+      //.translate(this.x, this.y)
+      .fillStyle(this.fill)
+      .closedcircle(this.x, this.y, this.radius)
+      .fill();
+      //.restore();
 
   },
 

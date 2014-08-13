@@ -3,11 +3,12 @@ ENGINE.SnapPoint = function(args) {
   _.extend(this, {
     width: 50,
     height: 50,
-    radius: 5,
+    radius: 7,
     snappoint: true,
     snapdistance: 25,
     states:[],
-    fill: '#444444'
+    stroke: 'rgba(255,255,255,0)',
+    opacity: 0,
   }, args);
 
 };
@@ -18,7 +19,13 @@ ENGINE.SnapPoint.prototype = {
   },
 
   step: function(delta) {
-    //console.log(utils.mousexy());
+    if(app.game.dragging === true && this.opacity <= 0.4) {
+      this.opacity += delta/1000;
+      this.stroke = 'rgba(255,255,255,'+this.opacity+')';
+    }else if(this.opacity >= 0){
+      this.opacity -= delta/1000;
+      this.stroke = 'rgba(255,255,255,'+this.opacity+')';
+    }
   },
 
   render: function(delta) {
@@ -29,9 +36,9 @@ ENGINE.SnapPoint.prototype = {
     //   .fill();
 
     app.layer
-      .fillStyle(this.fill)
+      .strokeStyle(this.stroke)
       .closedcircle(this.x, this.y, this.radius)
-      .fill();
+      .stroke();
   },
 
   remove: function() {
