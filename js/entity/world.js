@@ -48,8 +48,7 @@ ENGINE.World.prototype = {
 
   snapPoints: function() {
     for(var i=0; i<this.snapcount; i++) {
-      var snappoint = app.game.entities.add(ENGINE.SnapPoint);
-      app.game.snappoints.push(snappoint);
+      var snappoint = app.game.entities.add(ENGINE.SnapPoint, {parent:'world'});
       this.snappoints.push(snappoint);
     }
     utils.arrangeToArc(this.snappoints, this);

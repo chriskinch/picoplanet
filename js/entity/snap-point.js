@@ -1,12 +1,11 @@
 ENGINE.SnapPoint = function(args) {
 
   _.extend(this, {
+    group: 'snappoint',
     width: 50,
     height: 50,
     radius: 7,
-    snappoint: true,
     snapdistance: 25,
-    states:[],
     stroke: 'rgba(255,255,255,0)',
     opacity: 0,
   }, args);
@@ -19,7 +18,7 @@ ENGINE.SnapPoint.prototype = {
   },
 
   step: function(delta) {
-    if(app.game.dragging === true && this.opacity <= 0.4) {
+    if(app.game.dragitem && this.opacity <= 0.4) {
       this.opacity += delta/1000;
       this.stroke = 'rgba(255,255,255,'+this.opacity+')';
     }else if(this.opacity >= 0){

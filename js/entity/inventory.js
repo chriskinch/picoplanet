@@ -1,11 +1,11 @@
 ENGINE.Inventory = function(args) {
 
   _.extend(this, {
+    group: 'inventory',
     width: 20,
     height: 20,
     radius: 10,
     selectable: true,
-    states:[],
   }, args);
 
 };

@@ -5,19 +5,6 @@ var utils = {
 		return angle;
 	},
 
-	hasArrayItem: function(array, string) {
-		//console.log(array);
-		var index = array.indexOf(string);
-		if(index > -1) return true;
-	},
-
-	setArrayItem: function(array, string, state) {
-		var index = array.indexOf(string);
-		if(index == -1 && state === true) array.push(string);
-		if(index > -1 && state === false) array.splice(index, 1);
-		return array;
-	},
-
 	arrangeToArc: function(array, target) {
 		var radius = target.radius;
 		var angle = (360/array.length) * (Math.PI/180);
@@ -70,5 +57,20 @@ var utils = {
 	    + (3 * b + pct * (-6 * b + b * 3 * pct)) * pct
 	    + (c * 3 - c * 3 * pct) * t2
 	    + d * t3;
+	},
+
+	/**
+	 * Returns a random number between min (inclusive) and max (exclusive)
+	 */
+	getRandomArbitrary: function(min, max) {
+	    return Math.random() * (max - min) + min;
+	},
+
+	/**
+	 * Returns a random integer between min (inclusive) and max (inclusive)
+	 * Using Math.round() will give you a non-uniform distribution!
+	 */
+	getRandomInt: function(min, max) {
+	    return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
 };
