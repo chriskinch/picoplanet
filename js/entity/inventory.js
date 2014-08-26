@@ -2,7 +2,7 @@ ENGINE.Inventory = function(args) {
 
   _.extend(this, {
     group: 'inventory',
-    width: 20,
+    width: 40,
     height: 20,
     radius: 10,
     selectable: true,
@@ -17,10 +17,18 @@ ENGINE.Inventory.prototype = {
   },
 
   render: function(delta) {
+    // app.layer
+    //   .fillStyle(this.fill)
+    //   .closedcircle(this.x, this.y, this.radius)
+    //   .fill();
+
     app.layer
+      .save()
+      .translate(this.x, this.y)
       .fillStyle(this.fill)
-      .closedcircle(this.x, this.y, this.radius)
-      .fill();
+      .roundRect(-this.width/2, -this.height/2, this.width, this.height, this.radius)
+      .fill()
+      .restore();
   },
 
   remove: function() {

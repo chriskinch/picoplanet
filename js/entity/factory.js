@@ -6,16 +6,18 @@ ENGINE.Factory = function(args) {
     y: app.game.inv_factory.y,
     width: 20,
     height: 20,
-    fill: '#993333',
-    back: '#550000',
-    rate: 3000,
-    cooldown: 3000,
-    cost: 10,
+    fill: '#333399',
+    back: '#000055',
+    gather_rate: 2000,
+    gather_cooldown: 2000,
+    cap: 10,
+    cost: app.game.buildings.cost,
     build: 300,
     max_health:10,
     health: 10,
     constructed: 0,
     snap_to: app.game.world,
+    snappoint: undefined,
     selectable: true,
     draggable: true,
     snappable: true,
@@ -23,46 +25,59 @@ ENGINE.Factory = function(args) {
     mouseover: true,
   }, args);
 
+  /* On spawn */
+  app.game.credit -= this.cost;
+
 };
 
 ENGINE.Factory.prototype = {
 
-  gather: function(delta) {
-    this.rate -= delta;
+  construct: function(delta) {
+    if(this.constructed < this.build) {
+      this.constructed += 1;
+    }
+    var build_percent = this.constructed/this.build * 100;
 
-    if(this.rate <= 0) {
-      app.game.credit += 1;
-      this.rate = this.cooldown;
+    if(build_percent >= 100) {
+      this.built = true;
     }
   },
 
-  construction: function(delta) {
-    app.game.credit -= this.cost;
-    this.cost = 0;
-    if(this.constructed < this.build) {
-      this.constructed += 1;
+  gather: function(delta) {
+    this.gather_rate -= delta;
+    if(this.gather_rate <= 0) {
+      app.game.credit++;
+      if(app.game.power < app.game.buildings.factory * this.cap) {
+        app.game.power++;
+      }
+      this.gather_rate = this.gather_cooldown;
     }
   },
 
   step: function(delta) {
-    if(this.snapped) {
-      this.construction(delta);
-      var build_percent = this.constructed/this.build * 100;
-      if(build_percent >= 100) {
-        this.gather(delta);
-        this.built = true;
-      }
-    }
+    if(!this.built && this.snapped) this.construct(delta);
+
+    if(this.built) this.gather(delta);
 
     this.health_percent = this.health/this.max_health;
     if(this.health <= 0) this.remove();
   },
 
   render: function(delta) {
+    var world = app.game.world;
+    var dx = app.game.world.x - this.x;
+    var dy = app.game.world.y - this.y;
+    var rad = Math.atan2(dx, dy) + Math.PI;
+
+    if(this.snappoint) {
+      this.x = this.snappoint.x;
+      this.y = this.snappoint.y;
+    }
+
     app.layer
       .save()
       .translate(this.x, this.y)
-      .rotate(Math.PI/180 * 180)
+      .rotate(-rad)
       .fillStyle(this.back)
       .fillRect(-this.width/2, -this.height/2, this.width, this.height)
       .restore();
@@ -70,7 +85,7 @@ ENGINE.Factory.prototype = {
     app.layer
       .save()
       .translate(this.x, this.y)
-      .rotate(Math.PI/180 * 180)
+      .rotate(-rad)
       .fillStyle(this.fill)
       .fillRect(-this.width/2, -this.height/2, this.width, this.height * this.health_percent)
       .restore();
@@ -79,6 +94,15 @@ ENGINE.Factory.prototype = {
     //   .fillStyle('#fff')
     //   .closedcircle(this.x, this.y, 1)
     //   .fill();
+    // app.layer
+    //   .save()
+    //   .beginPath()
+    //   .moveTo(world.x, world.y)
+    //   .lineTo(this.x, this.y)
+    //   .strokeStyle('#f00')
+    //   .stroke()
+    //   .restore();
+
   },
 
   remove: function() {

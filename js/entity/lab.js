@@ -1,19 +1,20 @@
-ENGINE.Defences = function(args) {
+ENGINE.Lab = function(args) {
 
   _.extend(this, {
     group: 'building',
-    x: app.game.inv_defences.x - 10,
-    y: app.game.inv_defences.y - 10,
+    x: app.game.inv_lab.x - 10,
+    y: app.game.inv_lab.y - 10,
     width: 20,
     height: 20,
-    fill: '#999933',
-    back: '#555500',
-    gather_rate: 1000,
-    gather_cooldown: 1000,
-    fire_rate: 1000,
-    fire_cooldown: {min:800, max:1000},
+    fill: '#993333',
+    back: '#550000',
+    rate: 0,
+    cooldown: 100,
+    gather_rate: 3000,
+    gather_cooldown: 3000,
     cost: app.game.buildings.cost,
-    build: 300,
+    cap: 1,
+    build: 100,
     max_health: 10,
     health: 10,
     constructed: 0,
@@ -26,67 +27,42 @@ ENGINE.Defences = function(args) {
     mouseover: true,
   }, args);
 
-  this.laser = {
-    color: '#5555ff',
-  }
-
   /* On spawn */
   app.game.credit -= this.cost;
 };
 
-ENGINE.Defences.prototype = {
-  construct: function(delta) {
-    if(this.constructed < this.build) {
-      this.constructed += 1;
-    }
-    var build_percent = this.constructed/this.build * 100;
+ENGINE.Lab.prototype = {
 
-    if(build_percent >= 100) {
-      this.built = true;
-    }
-  },
+  construct: function() {
+    if(!this.built && this.snapped) {
+      if(this.constructed < this.build) {
+        this.constructed++;
+      }
+      var build_percent = this.constructed/this.build * 100;
 
-  gather: function(delta) {
-    this.gather_rate -= delta;
-    if(this.gather_rate <= 0 && app.game.defence < app.game.buildings.defences) {
-      app.game.defence++;
-      this.gather_rate = this.gather_cooldown;
+      if(build_percent >= 100) {
+        this.built = true;
+      }
     }
   },
 
-  fire: function() {
-    this.collection.add(ENGINE.Laser, {
-      x: this.x,
-      y: this.y,
-      start: { x:this.x, y:this.y },
-      target: this.target,  
-      color: this.laser.color,
-    });
-  },
-
-  targetUnit: function() {
-    var enemies = app.game.entities.group('group', 'enemy');
-    var targets = app.game.entities.filter('orbiting', true, enemies);
-    if(targets.length > 0) {
-      var index = Math.floor( Math.random()*(targets.length) );
-      return targets[index];
+  gather: function() {
+    if(this.built && app.game.researchers < app.game.buildings.lab * this.cap) {
+      app.game.researchers++;
     }
   },
 
   step: function(delta) {
-    if(!this.built && this.snapped) this.construct(delta);
-
-    if(this.built) this.gather(delta);
-
-    if(this.built && app.game.enemies.count > 0) {
-      this.fire_rate -= delta;
-      if(this.fire_rate <= 0) {
-        this.target = this.targetUnit();
-        if(this.target) {
-          this.fire();
-        }
-        this.fire_rate = utils.getRandomArbitrary(this.fire_cooldown.min, this.fire_cooldown.max);
-      }
+    this.rate -= delta;
+    if(this.rate <= 0) {
+      this.construct();
+      this.rate = this.cooldown;
+    }
+  
+    this.gather_rate -= delta;
+    if(this.gather_rate <= 0) {
+      this.gather();
+      this.gather_rate = this.gather_cooldown;
     }
 
     this.health_percent = this.health/this.max_health;
@@ -143,6 +119,6 @@ ENGINE.Defences.prototype = {
     this.collection.dirty = true;
 
     app.game.buildings.count--;
-    app.game.buildings.defences--;
+    app.game.buildings.lab--;
   }
 };

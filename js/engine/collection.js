@@ -109,7 +109,9 @@ _.extend(ENGINE.Collection.prototype, {
         var box = [this[i].x-this[i].width/2, this[i].x+this[i].width/2, this[i].y-this[i].height/2, this[i].y+this[i].height/2];
         var hover = (box && x >= box[0] && x <= box[1] && y >= box[2] && y <= box[3]) ? true : false;
         this[i].mouseover = hover;
+        //if(hover) console.log(this[i]);
     }
+
   },
 
   issnapped: function(x, y) {
@@ -131,9 +133,8 @@ _.extend(ENGINE.Collection.prototype, {
 
   snap: function(entity, snappoint, x, y) {
     entity.snapped = true;
+    entity.snappoint = snappoint;
     this.drop();
-    entity.x = snappoint.x;
-    entity.y = snappoint.y;
   },
 
   grab: function(button) {

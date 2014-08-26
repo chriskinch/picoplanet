@@ -19,7 +19,7 @@ ENGINE.Enemy = function(args) {
     cooldown: {min:900, max:1100},
     path: 0,
     speed: utils.getRandomArbitrary(0.5, 1),
-    health: 5,
+    health: 10,
   }, args);
 
   this.laser = {

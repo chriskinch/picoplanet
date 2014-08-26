@@ -1,28 +1,33 @@
 ENGINE.World = function(args) {
 
+  var radius = 70;
+
   _.extend(this, {
     x: app.width/2,
     y: app.height/2,
     image: app.assets.image("circle"),
-    width: 200,
-    height: 200,
-    radius: 100,
+    width: 140,
+    height: 140,
+    new_radius: radius,
+    radius: radius,
     speed: 1,
     cycle: 0,
+    level: 1,
     fill: '#55dd44',
-    snapcount: 12,
+    snapcount: 9,
     snappoints: [],
   }, args);
 
+  this.snapPoints();
 };
 
 ENGINE.World.prototype = {
-  create: function() {
-    this.snapPoints()
-  },
-
   step: function(delta) {
-    //this.cycle += this.speed / (delta*20);
+    if(this.radius < this.new_radius) {
+      this.radius += 1;
+      this.snapPoints();
+    }
+
   },
 
   render: function(delta) {
@@ -47,7 +52,8 @@ ENGINE.World.prototype = {
   },
 
   snapPoints: function() {
-    for(var i=0; i<this.snapcount; i++) {
+    var snappoints = Math.floor(this.snapcount) - this.snappoints.length;
+    for(var i=0; i<snappoints; i++) {
       var snappoint = app.game.entities.add(ENGINE.SnapPoint, {parent:'world'});
       this.snappoints.push(snappoint);
     }
