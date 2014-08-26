@@ -68,8 +68,6 @@ ENGINE.Engineering.prototype = {
       var capped = damaged.splice(0, this.cap);
 
       _.each(capped, function(building, index){
-        console.clear();
-        console.info(capped);
         building.health += 0.05;
         app.game.credit -= 0.025;
       });
