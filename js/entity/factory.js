@@ -90,6 +90,17 @@ ENGINE.Factory.prototype = {
       .fillRect(-this.width/2, -this.height/2, this.width, this.height * this.health_percent)
       .restore();
 
+    if(this.selected) {
+      app.layer
+      .save()
+      .translate(this.x, this.y)
+      .rotate(-rad)
+      .lineWidth(2)
+      .strokeStyle('#fff')
+      .strokeRect(-this.width/2, -this.height/2, this.width, this.height)
+      .restore();
+    }
+
     // app.layer
     //   .fillStyle('#fff')
     //   .closedcircle(this.x, this.y, 1)
@@ -115,5 +126,6 @@ ENGINE.Factory.prototype = {
 
     app.game.buildings.count--;
     app.game.buildings.factory--;
+    this.snappoint.snapped = undefined;
   }
 };

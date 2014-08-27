@@ -115,6 +115,7 @@ app.game = new ENGINE.Scene({
     }
 
     this.entities.grab(button);
+    this.entities.highlight(button);
   },
 
   onmousemove: function(x, y) {

@@ -120,12 +120,14 @@ _.extend(ENGINE.Collection.prototype, {
           snappoints = this.parent.dragitem.snap_to.snappoints;
 
       for(var i=0; i < snappoints.length; i++){
-        dx = x - snappoints[i].x;
-        dy = y - snappoints[i].y;
-        distance = Math.sqrt(dx * dx + dy * dy);
+        if(!snappoints[i].snapped) {
+          dx = x - snappoints[i].x;
+          dy = y - snappoints[i].y;
+          distance = Math.sqrt(dx * dx + dy * dy);
 
-        if(distance < snappoints[i].snapdistance) {
-          this.snap(this.parent.dragitem, snappoints[i], x, y);
+          if(distance < snappoints[i].snapdistance) {
+            this.snap(this.parent.dragitem, snappoints[i], x, y);
+          }
         }
       }
     }
@@ -133,13 +135,25 @@ _.extend(ENGINE.Collection.prototype, {
 
   snap: function(entity, snappoint, x, y) {
     entity.snapped = true;
+    entity.selected = false;
     entity.snappoint = snappoint;
+    snappoint.snapped = true;
     this.drop();
+  },
+
+  highlight: function(button) {
+    for(var i=0; i < this.length; i++){
+      if(button === 0 && this[i].selectable && !this[i].selected &&this[i].mouseover) {
+        this[i].selected = true;
+      }else {
+        this[i].selected = false;
+      }
+    }
   },
 
   grab: function(button) {
     for(var i=0; i < this.length; i++){
-      if(button === 0 && this[i].draggable === true && this[i].mouseover) {     
+      if(button === 0 && this[i].draggable && this[i].mouseover) {     
         this[i].grabbed = true;
         this.parent.dragitem = this[i];
       }
