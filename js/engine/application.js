@@ -13,9 +13,9 @@ ENGINE.Application = function(args) {
   /* bind events to the application - you will understand it later */
   eveline(this);
 
-  /* create loader and assets manager */
+  /* create loader and assets manager */  
   this.loader = new ENGINE.Loader();
-  this.assets = new ENGINE.Assets(this.loader);
+  this.assets = new ENGINE.Assets(this.loader); 
 
   this.oncreate();
 
@@ -26,12 +26,13 @@ ENGINE.Application = function(args) {
 
 };
 
-ENGINE.Application.prototype = {
+ENGINE.Application.prototype = { 
 
-  /* call the method in current scene with given arguments
+  /* call the method in current scene with given arguments 
        use to pass the event to the current scene
   */
   dispatch: function(method) {
+
     if (this.scene && this.scene[arguments[0]]) this.scene[arguments[0]].apply(this.scene, Array.prototype.slice.call(arguments, 1));
   },
 
@@ -52,28 +53,29 @@ ENGINE.Application.prototype = {
      there are not like 2000 events so let's do this by finger */
 
 
-  onkeydown: function() {
-    this.dispatch("onkeydown", cq.keycodes[event.keyCode]);
+  onkeydown: function(key) {
+    this.dispatch("onkeydown", key);
   },
 
-  onkeyup: function() {
-    this.dispatch("onkeyup", cq.keycodes[event.keyCode]);
+  onkeyup: function(key) {
+    this.dispatch("onkeyup", key);
   },
 
-  onmousedown: function() {
-    this.dispatch("onmousedown", event.x, event.y, event.button);
+  onmousedown: function(x, y) {
+    this.dispatch("onmousedown", x, y);
   },
 
-  onmousemove: function() {
-    this.dispatch("onmousemove", event.x, event.y);
+  onmousemove: function(x, y) {
+    this.dispatch("onmousemove", x, y);
   },
 
-  onmouseup: function() {
-    this.dispatch("onmouseup", event.x, event.y, event.button);
+  onmouseup: function(x, y) {
+    this.dispatch("onmouseup", x, y);
   },
 
   onclick: function(x, y) {
-    this.dispatch("onclick", event.x, event.y, event.button);
+    console.log(this);
+    this.dispatch("onclick", x, y);
   },
 
   ongamepaddown: function(button, gamepad) {

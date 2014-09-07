@@ -14,7 +14,7 @@ ENGINE.Laser.prototype = {
 
     if(this.path >= 1) {
       this.remove();
-      this.target.health -= 1;
+      this.target.counter.health -= 1;
     }
     var xy = utils.getLineXYatPercent(
       this.start,

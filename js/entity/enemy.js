@@ -19,7 +19,12 @@ ENGINE.Enemy = function(args) {
     cooldown: {min:900, max:1100},
     path: 0,
     speed: utils.getRandomArbitrary(0.5, 1),
-    health: 10,
+    counter: {
+      health: 10,
+    },
+    state: {
+      orbiting: false,
+    }
   }, args);
 
   this.laser = {
@@ -31,7 +36,7 @@ ENGINE.Enemy = function(args) {
 ENGINE.Enemy.prototype = {
 
   followPath: function(delta) {
-    if(this.orbiting) {
+    if(this.state.orbiting) {
       this.path -= (this.speed*45) * delta / 1000;
       if(this.path <= 0) this.path = 360;
       var angle = (this.path) * (Math.PI/180);
@@ -51,7 +56,7 @@ ENGINE.Enemy.prototype = {
       this.y = xy.y;
       if(this.path >= 1) {
         this.path = 360;
-        this.orbiting = true;
+        this.state.orbiting = true;
       }
     }
   },
@@ -61,14 +66,14 @@ ENGINE.Enemy.prototype = {
       x: this.x,
       y: this.y,
       start: { x:this.x, y:this.y },
-      target: this.target,  
+      target: this.target,
       color: this.laser.color,
     });
   },
 
-  targetUnit: function() {   
-    var buildings = app.game.entities.group('group', 'building');
-    var targets = app.game.entities.filter('built', true, buildings);
+  targets: function() {
+    var buildings = _.where(app.game.entities, {group: 'building'});
+    var targets = _.filterByPath(buildings, 'state.built');
     if(targets.length > 0) {
       var index = Math.floor( Math.random()*(targets.length) );
       return targets[index];
@@ -77,10 +82,10 @@ ENGINE.Enemy.prototype = {
 
   step: function(delta) {
     this.followPath(delta);
-    if(this.orbiting && app.game.buildings.count > 0) {
+    if(this.state.orbiting && app.game.buildings.count > 0) {
       this.fire_rate -= delta;
       if(this.fire_rate <= 0) {
-        this.target = this.targetUnit();
+        this.target = this.targets();
         if(this.target) {
           this.fire();
         }
@@ -88,7 +93,7 @@ ENGINE.Enemy.prototype = {
       }
     }
 
-    if(this.health <= 0) this.remove();
+    if(this.counter.health <= 0) this.remove();
   },
 
   render: function(delta) {

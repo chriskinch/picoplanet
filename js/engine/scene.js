@@ -11,5 +11,5 @@ ENGINE.Scene.prototype = {
   onleave: function() { },
   onrender: function() { },
   onstep: function() { }
-
+  
 };

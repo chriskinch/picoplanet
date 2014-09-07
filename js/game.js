@@ -7,7 +7,7 @@ app.game = new ENGINE.Scene({
     this.power = 0;
     this.engineers = 0;
     this.defence = 0;
-    this.researchers = 0;
+    this.tech = 0;
     
     this.planet = {
       level: 1,
@@ -62,10 +62,16 @@ app.game = new ENGINE.Scene({
       fill: '#993333',
     });
 
-    this.inv_world = this.entities.add(ENGINE.Inventory, {
+    this.inv_building = this.entities.add(ENGINE.Inventory, {
       x: 40,
       y: 160,
-      fill: '#aabbcc',
+      fill: '#bbccaa',
+    });
+
+    this.inv_world = this.entities.add(ENGINE.Inventory, {
+      x: 40,
+      y: 190,
+      fill: '#ccaa99',
     });
 
     this.world = this.entities.add(ENGINE.World);
@@ -78,7 +84,7 @@ app.game = new ENGINE.Scene({
     this.gui.add(this, 'power', 0).listen();
     this.gui.add(this, 'engineers', 0).listen();
     this.gui.add(this, 'defence', 0).listen();
-    this.gui.add(this, 'researchers', 0).listen();
+    this.gui.add(this, 'tech', 0).listen();
   },
 
   onstep: function(delta) {
@@ -110,12 +116,16 @@ app.game = new ENGINE.Scene({
       this.spawnBuilding('Lab', x, y);
     } 
 
+    if(this.inv_building.mouseover && this.selected) {
+      this.selected.upgrading = true;
+    }
+
     if(this.inv_world.mouseover) {
       this.upgradePlanet();
     }
 
     this.entities.grab(button);
-    this.entities.highlight(button);
+    this.entities.highlight(button);    
   },
 
   onmousemove: function(x, y) {
@@ -127,6 +137,10 @@ app.game = new ENGINE.Scene({
   onmouseup: function(x, y) {
     this.entities.drop(x, y);
     this.dragging = false;
+  },
+
+  onclick: function(x, y) {
+    console.log(x, y);
   },
 
   upgradePlanet: function() {

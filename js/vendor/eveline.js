@@ -14,7 +14,7 @@
   eveline = function(events, context, element) {
 
     if (element === undefined) {
-      element = window;
+      element = document.body;
     } else if (typeof element === "string") {
       element = document.querySelector(element);
     }

@@ -6,9 +6,6 @@ var app = new ENGINE.Application({
   oncreate: function() {
 
     this.assets.addImages(["circle.svg"]);
-
-    /* load anything to let the objects being create before calling ready */
-    this.loader.foo(500);
   },
 
   onready: function() {

@@ -1,14 +1,21 @@
 /*     
-  Canvas Query 0.9.1
+  Canvas Query 0.9.0
   http://canvasquery.com
   (c) 2012-2013 http://rezoner.net
   Canvas Query may be freely distributed under the MIT license.
-
 */
 
 (function(window, undefined) {
 
   var MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
+
+
+  window.requestAnimationFrame = (function() {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
+      window.setTimeout(callback, 1000 / 60);
+    };
+  })();
+
 
   var $ = function(selector) {
     if (arguments.length === 0) {
@@ -30,26 +37,7 @@
     }
 
     return new $.Wrapper(canvas);
-  };
-
-  $.cocoon = function(selector) {
-    if (arguments.length === 0) {
-      var canvas = $.createCocoonCanvas(window.innerWidth, window.innerHeight);
-      window.addEventListener("resize", function() {});
-    } else if (typeof selector === "string") {
-      var canvas = document.querySelector(selector);
-    } else if (typeof selector === "number") {
-      var canvas = $.createCocoonCanvas(arguments[0], arguments[1]);
-    } else if (selector instanceof Image || selector instanceof HTMLImageElement) {
-      var canvas = $.createCocoonCanvas(selector);
-    } else if (selector instanceof $.Wrapper) {
-      return selector;
-    } else {
-      var canvas = selector;
-    }
-
-    return new $.Wrapper(canvas);
-  };
+  }
 
   $.extend = function() {
     for (var i = 1; i < arguments.length; i++) {
@@ -317,7 +305,7 @@
 
     hexToRgb: function(hex) {
       if (hex.length === 7) return ['0x' + hex[1] + hex[2] | 0, '0x' + hex[3] + hex[4] | 0, '0x' + hex[5] + hex[6] | 0];
-      else return ['0x' + hex[1] + hex[1] | 0, '0x' + hex[2] + hex[2] | 0, '0x' + hex[3] + hex[3] | 0];
+      else return ['0x' + hex[1] | 0, '0x' + hex[2], '0x' + hex[3] | 0];
     },
 
     rgbToHex: function(r, g, b) {
@@ -475,31 +463,54 @@
         result.height = height;
       }
 
-
-      return result;
-    },
-
-    createCocoonCanvas: function(width, height) {
-      var result = document.createElement("screencanvas");
-
-      if (arguments[0] instanceof Image || arguments[0] instanceof HTMLImageElement) {
-        var image = arguments[0];
-        result.width = image.width;
-        result.height = image.height;
-        result.getContext("2d").drawImage(image, 0, 0);
-      } else {
-        result.width = width;
-        result.height = height;
-      }
-
-
       return result;
     },
 
     createImageData: function(width, height) {
       return document.createElement("Canvas").getContext("2d").createImageData(width, height);
+    },
+
+
+    /* https://gist.github.com/3781251 */
+
+    mousePosition: function(event) {
+      var totalOffsetX = 0,
+        totalOffsetY = 0,
+        coordX = 0,
+        coordY = 0,
+        currentElement = event.target || event.srcElement,
+        mouseX = 0,
+        mouseY = 0;
+
+      // Traversing the parents to get the total offset
+      do {
+        totalOffsetX += currentElement.offsetLeft;
+        totalOffsetY += currentElement.offsetTop;
+      }
+      while ((currentElement = currentElement.offsetParent));
+      // Set the event to first touch if using touch-input
+      if (event.changedTouches && event.changedTouches[0] !== undefined) {
+        event = event.changedTouches[0];
+      }
+      // Use pageX to get the mouse coordinates
+      if (event.pageX || event.pageY) {
+        mouseX = event.pageX;
+        mouseY = event.pageY;
+      }
+      // IE8 and below doesn't support event.pageX
+      else if (event.clientX || event.clientY) {
+        mouseX = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+        mouseY = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+      }
+      // Subtract the offset from the mouse coordinates
+      coordX = mouseX - totalOffsetX;
+      coordY = mouseY - totalOffsetY;
+
+      return {
+        x: coordX,
+        y: coordY
+      };
     }
-    
   });
 
   $.Wrapper = function(canvas) {
@@ -1293,11 +1304,6 @@
       }
     },
 
-    alpha: function(a) {
-      this[3] = a;
-      return this;
-    },
-
     fromHsl: function() {
       var components = arguments[0] instanceof Array ? arguments[0] : arguments;
       var color = $.hslToRgb(components[0], components[1], components[2]);
@@ -1370,18 +1376,6 @@
       var l = arguments[2] === null ? hsl[2] : $.limitValue(arguments[2], 0, 1);
 
       this.fromHsl(h, s, l);
-
-      return this;
-    },
-
-    mix: function(color, mix) {
-
-      var color = cq.color(color);
-
-      this[0] = this[0] + (color[0] - this[0]) * mix;
-      this[1] = this[1] + (color[1] - this[1]) * mix;
-      this[2] = this[2] + (color[2] - this[2]) * mix;
-      this[3] = this[3] + (color[3] - this[3]) * mix;
 
       return this;
     }

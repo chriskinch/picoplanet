@@ -89,14 +89,14 @@ _.extend(ENGINE.Collection.prototype, {
     return group;
   },
 
-  select: function(name) {
+  select: function(name, array) {
     for(var i=0; i < this.length; i++){
       if(this[i].name == name) var entity = this[i];
     }
     return entity;
   },
 
-  filter: function(param, name, array) {
+  filter: function(param, array, name) {
     var group = [];
     for(var i=0; i < array.length; i++){
       if(array[i][param] == name) group.push(array[i]);
@@ -106,9 +106,18 @@ _.extend(ENGINE.Collection.prototype, {
 
   ismouseover: function(x, y) {
     for(var i=0; i < this.length; i++){
-        var box = [this[i].x-this[i].width/2, this[i].x+this[i].width/2, this[i].y-this[i].height/2, this[i].y+this[i].height/2];
+      
+        var _this = (this[i].physics) ? this[i].physics : this[i],
+        state = (this[i].physics) ? this[i].state : this[i],
+        box = [
+          _this.x-_this.width/2,
+          _this.x+_this.width/2,
+          _this.y-_this.height/2,
+          _this.y+_this.height/2
+        ];
         var hover = (box && x >= box[0] && x <= box[1] && y >= box[2] && y <= box[3]) ? true : false;
-        this[i].mouseover = hover;
+        //console.log(state);
+        state.mouseover = hover;
         //if(hover) console.log(this[i]);
     }
 
@@ -116,8 +125,8 @@ _.extend(ENGINE.Collection.prototype, {
 
   issnapped: function(x, y) {
     if(this.parent.dragitem) {
-      var dx, dy, distance,
-          snappoints = this.parent.dragitem.snap_to.snappoints;
+      var dx, dy, distance;
+      var snappoints = (this.parent.dragitem.physics) ? this.parent.dragitem.snap_data.snap_to.snappoints : this.parent.dragitem.snap_to.snappoints;
 
       for(var i=0; i < snappoints.length; i++){
         if(!snappoints[i].snapped) {
@@ -134,36 +143,43 @@ _.extend(ENGINE.Collection.prototype, {
   },
 
   snap: function(entity, snappoint, x, y) {
-    entity.snapped = true;
-    entity.selected = false;
-    entity.snappoint = snappoint;
+    var state = (entity.physics) ? entity.state : entity;
+    var snap_data = (entity.physics) ? entity.snap_data : entity;
+    state.snapped = true;
+    state.selected = false;
+    snap_data.snappoint = snappoint;
     snappoint.snapped = true;
     this.drop();
   },
 
-  highlight: function(button) {
+  highlight: function() {
+    this.parent.selected = null;
     for(var i=0; i < this.length; i++){
-      if(button === 0 && this[i].selectable && !this[i].selected &&this[i].mouseover) {
-        this[i].selected = true;
-      }else {
-        this[i].selected = false;
+      var state = (this[i].physics) ? this[i].state : this[i];
+      if(state.selectable && !state.selected && state.mouseover) {
+        state.selected = true;
+        this.parent.selected = this[i];
+      }else if(state.selectable){
+        state.selected = false;
       }
     }
   },
 
-  grab: function(button) {
+  grab: function() {
     for(var i=0; i < this.length; i++){
-      if(button === 0 && this[i].draggable && this[i].mouseover) {     
-        this[i].grabbed = true;
+      var state = (this[i].physics) ? this[i].state : this[i];
+      if(state.draggable && state.mouseover) {     
+        state.grabbed = true;
         this.parent.dragitem = this[i];
       }
     }
   },
 
   drag: function(x, y) {
-    for(var i=0; i < this.length; i++){  
-      if(this[i].grabbed) {
-        this.dragging = true;
+    for(var i=0; i < this.length; i++){
+      var state = (this[i].physics) ? this[i].state : this[i];
+      if(state.grabbed) {
+        state.dragging = true;
         this[i].x = x;
         this[i].y = y;
       }
@@ -172,9 +188,10 @@ _.extend(ENGINE.Collection.prototype, {
 
   drop: function(x, y) {
     for(var i=0; i < this.length; i++){
-      if(this[i].dragging || this[i].grabbed) {
-        this[i].dragging = false;
-        this[i].grabbed = false;
+      var state = (this[i].physics) ? this[i].state : this[i];
+      if(state.dragging || state.grabbed) {
+        state.dragging = false;
+        state.grabbed = false;
         this.parent.dragitem = undefined;
       }
     }
