@@ -74,7 +74,6 @@ ENGINE.Application.prototype = {
   },
 
   onclick: function(x, y) {
-    console.log(this);
     this.dispatch("onclick", x, y);
   },
 

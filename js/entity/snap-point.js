@@ -8,6 +8,7 @@ ENGINE.SnapPoint = function(args) {
     snapdistance: 25,
     stroke: 'rgba(255,255,255,0)',
     opacity: 0,
+    disabled: true,
   }, args);
 
 };

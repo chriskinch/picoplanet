@@ -3,8 +3,6 @@ ENGINE.Defences = function(args) {
   _.extend(this, {
     type: 'defences',
     resource: 'defence',
-    x: app.game.inv_defences.x - 10,
-    y: app.game.inv_defences.y - 10,
     counter: {
       cap: 1,
     },

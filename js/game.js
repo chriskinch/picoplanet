@@ -34,29 +34,35 @@ app.game = new ENGINE.Scene({
       spawn_cooldown: 1000,
     };
 
+    this.mouseover = undefined;
+
     this.entities = new ENGINE.Collection(this);
   },
 
   onenter: function() {
     this.inv_factory = this.entities.add(ENGINE.Inventory, {
+      spawn: 'Factory',
       x: 40,
       y: 30,
       fill: '#333399',
     });
 
     this.inv_engineering = this.entities.add(ENGINE.Inventory, {
+      spawn: 'Engineering',
       x: 40,
       y: 60,
       fill: '#339900',
     });
 
     this.inv_defences = this.entities.add(ENGINE.Inventory, {
+      spawn: 'Defences',
       x: 40,
       y: 90,
       fill: '#999933',
     });
 
     this.inv_lab = this.entities.add(ENGINE.Inventory, {
+      spawn: 'Lab',
       x: 40,
       y: 120,
       fill: '#993333',
@@ -103,44 +109,57 @@ app.game = new ENGINE.Scene({
   },
 
   onmousedown: function(x, y, button) {
-    if(this.inv_factory.mouseover) {
-      this.spawnBuilding('Factory', x, y);
-    }
-    if(this.inv_engineering.mouseover) {
-      this.spawnBuilding('Engineering', x, y);
-    }
-    if(this.inv_defences.mouseover) {
-      this.spawnBuilding('Defences', x, y);
-    }
-    if(this.inv_lab.mouseover) {
-      this.spawnBuilding('Lab', x, y);
-    } 
+    this.mouseover = this.over(x, y);
+    this.drag();
 
-    if(this.inv_building.mouseover && this.selected) {
-      this.selected.upgrading = true;
+    if(this.mouseover && this.mouseover.group == 'inventory') {
+      this.spawnBuilding(this.mouseover.spawn, x, y);
     }
 
     if(this.inv_world.mouseover) {
       this.upgradePlanet();
     }
-
-    this.entities.grab(button);
-    this.entities.highlight(button);    
+    
+    //this.entities.grab(button);
+    //this.select();    
   },
 
   onmousemove: function(x, y) {
-    this.entities.ismouseover(x, y);
-    this.entities.issnapped(x, y);
-    this.entities.drag(x, y);
+    this.mousex = x;
+    this.mousey = y;
   },
 
   onmouseup: function(x, y) {
-    this.entities.drop(x, y);
-    this.dragging = false;
+    this.drop();
   },
 
-  onclick: function(x, y) {
-    console.log(x, y);
+  over: function(x, y) {
+    this.mouseover = undefined;
+    var hovers = [];
+    _.invoke(this.entities, function(){
+      var box = [this.x-this.width/2, this.x+this.width/2, this.y-this.height/2, this.y+this.height/2];
+      var hover = (box && x >= box[0] && x <= box[1] && y >= box[2] && y <= box[3]) ? this : undefined;
+      if(hover && !this.disabled) hovers.push(hover);
+    });
+    if(hovers.length > 0) return hovers[0];
+  },
+
+  drag: function(){
+    this.dragitem = this.mouseover && this.mouseover.state.draggable ? this.mouseover : undefined;
+    if(this.dragitem && this.dragitem.state) this.dragitem.state.dragging = true;
+  },
+
+  drop: function() {
+    if(this.dragitem) this.dragitem.state.dragging = false;
+    this.dragitem = undefined;
+  },
+
+  select: function() {
+    if(app.game.mouseover && app.game.mouseover.state && app.game.mouseover.state.selectable) {
+      app.game.selected.state.selected = false;
+      app.game.selected = app.game.mouseover;
+      app.game.selected.state.selected = true;
+    }
   },
 
   upgradePlanet: function() {
@@ -156,19 +175,19 @@ app.game = new ENGINE.Scene({
     this.god_mode) {
       this.credit -= credit;
       this.planet.level++;
-      console.log(Math.floor(this.world.snapcount * 0.34));
       this.world.new_radius *= 1.2;
       this.world.snapcount *= 1.34;
-      
     }
   },
 
   spawnBuilding: function(type, x, y) {
-    if(this.credit >= this.buildings.cost) {
+    if(this.credit >= this.buildings.cost && type) {
       var constructor = ENGINE[type]; 
       var name = type.toLowerCase();
       var width = height = 20;
-      this.entities.add(constructor);
+      var building = this.entities.add(constructor);
+      this.selected = building;
+      this.dragitem = building;
       this.buildings[name]++;
       this.buildings.count++;
     }

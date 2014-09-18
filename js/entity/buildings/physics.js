@@ -5,8 +5,12 @@ ENGINE.Physics = function(parent) {
     group: 'building',
     width: 20,
     height: 20,
+    x: app.game.mousex,
+    y: app.game.mousey,
+    level: 1,
 
     upgrade: {
+      level: 1,
       height: 20,
     },
 
@@ -32,11 +36,12 @@ ENGINE.Physics = function(parent) {
 
     state: {
       selectable: true,
+      selected: true,
       draggable: true,
+      dragging: true,
       snappable: true,
       grabbed: true,
       construct: true,
-      mouseover: true,
       damaged: false,
     }
   });
@@ -60,18 +65,42 @@ ENGINE.Physics.prototype = {
 
   gather: function() {
     var cap = app.game.buildings[this.parent.type] * this.parent.counter.cap;
-    console.log(app.game[this.parent.resource]);
     if(app.game[this.parent.resource] < cap) {
       app.game[this.parent.resource]++;
     }
   },
 
   upgrade: function(delta) {
-    if(this.parent.height < this.parent.upgrade.height * this.parent.upgrade.level + this.parent.height && this.parent.state.built) {
+    if(this.parent.level < this.parent.upgrade.level && this.parent.state.built) {
       this.parent.height += this.parent.upgrade.height/10;
     }else{
       this.parent.state.upgrading = false;
     }
+  },
+
+  distance: function() {
+    var dx, dy, distance;
+    var snappoints = this.parent.snap_data.snap_to.snappoints;
+    var self = this;
+    var parent = this.parent;
+
+    _.invoke(snappoints, function(){
+      if(!this.snapped) {
+        dx = parent.x - this.x;
+        dy = parent.y - this.y;
+        distance = Math.sqrt(dx * dx + dy * dy);
+        if(distance < this.snapdistance) {
+          self.snap(this);
+        }
+      }
+    });
+  },
+
+  snap: function(snappoint) {
+    this.parent.state.snapped = true;
+    this.parent.state.selected = false;
+    this.parent.snap_data.snappoint = snappoint;
+    snappoint.snapped = true;
   },
 
   step: function(delta) {
@@ -98,6 +127,9 @@ ENGINE.Physics.prototype = {
       }
     }
 
+    /* Monitor distance from snappoint */
+    if(this.parent.state.dragging) this.distance();
+
     /* Monitor current health and remove below 0 */
     this.parent.counter.health_percent = this.parent.counter.health/this.parent.counter.max_health;
     if(this.parent.counter.health <= 0) this.remove();
@@ -113,9 +145,12 @@ ENGINE.Physics.prototype = {
     var rad = Math.atan2(dx, dy) + Math.PI;
     var fill = (this.parent.state.built) ? this.parent.colour.fill : 'rgba(255,255,255,0.2)';
 
-    if(this.parent.snap_data.snappoint) {
+    if(this.parent.state.snapped) {
       this.parent.x = this.parent.snap_data.snappoint.x;
       this.parent.y = this.parent.snap_data.snappoint.y;
+    }else if(this.parent.state.dragging){
+      this.parent.x = app.game.mousex;
+      this.parent.y = app.game.mousey;
     }
 
     app.layer

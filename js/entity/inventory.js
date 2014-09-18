@@ -5,6 +5,8 @@ ENGINE.Inventory = function(args) {
     width: 40,
     height: 20,
     radius: 10,
+
+    state: {}
   }, args);
 
 };

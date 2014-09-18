@@ -3,8 +3,6 @@ ENGINE.Factory = function(args) {
   _.extend(this, {
     type: 'factory',
     resource: 'power',
-    x: app.game.inv_factory.x - 10,
-    y: app.game.inv_factory.y - 10,
     counter: {
       cap: 10,
     },
@@ -15,7 +13,6 @@ ENGINE.Factory = function(args) {
   }, args);
 
   this.physics = new ENGINE.Physics(this);
-  
 };
 
 ENGINE.Factory.prototype = {
@@ -23,7 +20,7 @@ ENGINE.Factory.prototype = {
   step: function(delta) {
     this.physics.step(delta);
   },
-
+  
   render: function(delta) {
     this.physics.render(delta);
 

@@ -16,6 +16,8 @@ ENGINE.World = function(args) {
     fill: '#55dd44',
     snapcount: 9,
     snappoints: [],
+
+    state: {}
   }, args);
 
   this.snapPoints();

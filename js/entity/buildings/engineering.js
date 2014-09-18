@@ -3,8 +3,6 @@ ENGINE.Engineering = function(args) {
   _.extend(this, {
     type: 'engineering',
     resource: 'engineers',
-    x: app.game.inv_engineering.x - 10,
-    y: app.game.inv_engineering.y - 10,
     counter: {
       cap: 3,
     },

@@ -3,8 +3,6 @@ ENGINE.Lab = function(args) {
   _.extend(this, {
     type: 'lab',
     resource: 'tech',
-    x: app.game.inv_lab.x - 10,
-    y: app.game.inv_lab.y - 10,
     counter: {
       cap: 1,
     },
