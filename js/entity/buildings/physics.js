@@ -140,8 +140,8 @@ ENGINE.Physics.prototype = {
 
   render: function(delta) {
     var world = app.game.world;
-    var dx = app.game.world.x - this.parent.x;
-    var dy = app.game.world.y - this.parent.y;
+    var dx = world.x - this.parent.x;
+    var dy = world.y - this.parent.y;
     var rad = Math.atan2(dx, dy) + Math.PI;
     var fill = (this.parent.state.built) ? this.parent.colour.fill : 'rgba(255,255,255,0.2)';
 
