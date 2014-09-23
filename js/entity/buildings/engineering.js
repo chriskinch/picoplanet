@@ -59,7 +59,7 @@ ENGINE.Engineering.prototype = {
             .beginPath()
             .moveTo(this.targets[i].x, this.targets[i].y)
             .bezierCurveTo(world.x + rand(-2, 2), world.y + rand(-2, 2), world.x + rand(-2, 2), world.y + rand(-2, 2), this.x, this.y)
-            .strokeStyle('rgba(0,0,0,0.1)')
+            .strokeStyle('rgba(0,0,0,0.2)')
             .stroke()
             .restore();
         }
