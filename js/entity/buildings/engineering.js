@@ -19,7 +19,7 @@ ENGINE.Engineering = function(args) {
 ENGINE.Engineering.prototype = {
 
   repair: function() {
-    if(this.state.built) {
+    if(this.state.built && app.game.credit > 0) {
       var buildings = _.where(app.game.entities, {group: 'building'});
       var damaged = _.filterByPath(buildings, 'state.damaged');
       this.targets = damaged.splice(0, this.counter.cap);
@@ -29,11 +29,7 @@ ENGINE.Engineering.prototype = {
         app.game.credit -= 0.25;
       });  
     }
-  },
-
-  tendrils: function(){
-
-  },
+  },  
 
   step: function(delta) {
     this.physics.step(delta);
@@ -51,7 +47,7 @@ ENGINE.Engineering.prototype = {
     var world = app.game.world;
     var rand = utils.getRandomArbitrary;
 
-    if(this.targets && this.targets.length > 0) {
+    if(this.targets && this.targets.length > 0 && app.game.credit) {
       for(var i=0; i<this.targets.length; i++){
         if(this.targets[i] !== this) {
           app.layer

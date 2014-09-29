@@ -113,8 +113,7 @@ app.game = new ENGINE.Scene({
     }
 
     if(this.mouseover && this.mouseover.group == 'inventory' && this.mouseover.name == 'upgrade') {
-      this.selected.state.upgrading = true;
-      this.selected.physics.upgrade();
+      this.upgrade(this.selected);
     }
   },
 
@@ -213,6 +212,14 @@ app.game = new ENGINE.Scene({
         this.enemies.spawnable = false;
       }
     }
-  }
+  },
+
+  upgrade: function(entity) {
+    console.log(entity);
+    if(entity && entity.state.built) {
+      entity.upgrade_data.level++;
+      entity.state.upgrading = true;
+    }
+  },
 
 });

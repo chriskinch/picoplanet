@@ -9,7 +9,7 @@ ENGINE.Physics = function(parent) {
     y: app.game.mousey,
     level: 1,
 
-    upgrade: {
+    upgrade_data: {
       level: 1,
       height: 20,
     },
@@ -71,9 +71,13 @@ ENGINE.Physics.prototype = {
   },
 
   upgrade: function(delta) {
-    if(this.parent.level < this.parent.upgrade.level && this.parent.state.built) {
-      this.parent.height += this.parent.upgrade.height/10;
+    var progress = this.parent.upgrade_data.height * this.parent.upgrade_data.level;
+
+    if(this.parent.state.upgrading && this.parent.height < progress) {
+      this.parent.height += this.parent.upgrade_data.height / delta;
+      console.log(delta);
     }else{
+      this.parent.level = this.parent.upgrade_data.level;
       this.parent.state.upgrading = false;
     }
   },
@@ -97,6 +101,7 @@ ENGINE.Physics.prototype = {
   },
 
   snap: function(snappoint) {
+    app.game.deselect();
     this.parent.state.snapped = true;
     this.parent.state.selected = false;
     this.parent.snap_data.snappoint = snappoint;
@@ -133,6 +138,8 @@ ENGINE.Physics.prototype = {
     /* Monitor current health and remove below 0 */
     this.parent.counter.health_percent = this.parent.counter.health/this.parent.counter.max_health;
     if(this.parent.counter.health <= 0) this.remove();
+
+    if(this.parent.state.upgrading) this.upgrade(delta);
 
     /* Set damaged status */
     this.parent.state.damaged = (this.parent.counter.health < this.parent.counter.max_health) ? true : false;
