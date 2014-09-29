@@ -215,7 +215,6 @@ app.game = new ENGINE.Scene({
   },
 
   upgrade: function(entity) {
-    console.log(entity);
     if(entity && entity.state.built) {
       entity.upgrade_data.level++;
       entity.state.upgrading = true;

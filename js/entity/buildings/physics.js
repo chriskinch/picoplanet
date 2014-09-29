@@ -75,7 +75,6 @@ ENGINE.Physics.prototype = {
 
     if(this.parent.state.upgrading && this.parent.height < progress) {
       this.parent.height += this.parent.upgrade_data.height / delta;
-      console.log(delta);
     }else{
       this.parent.level = this.parent.upgrade_data.level;
       this.parent.state.upgrading = false;
