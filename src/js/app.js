@@ -1,9 +1,16 @@
 import '../css/style.css';
 
+import 'pixi'
+import 'p2'
+import Phaser from 'phaser'
+
 window.onload = function() {
 
 
-var game = new Phaser.Game(1905, 944, Phaser.CANVAS, 'phaser-example', { create: create, update: update });
+var game = new Phaser.Game(1905, 944, Phaser.CANVAS, 'phaser-example', { create: create, update: update }),
+    rats,
+    player,
+    cursors;
 
 function create() {
 
