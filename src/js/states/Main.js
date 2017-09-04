@@ -12,31 +12,23 @@ class Main extends Phaser.State {
     }
  
     create() {
- 		console.log("MAIN CREATE@!");
+ 		console.log("MAIN CREATE!");
  		this.game.updateEvent = new Phaser.Signal();
- 		console.log(this.game.updateEvent);
 
  		this.game.stage.backgroundColor = 0x444444;
 
         let earth = new Planet(this.game, {diameter:200, slots:7});
         earth.createPlanet();
 
-        //let pallet = new Pallet({ game: this.game, x: this.game.world.centerX, y:this.game.world.centerY, key: 'sprite'});
-
-        this.pallet = new Pallet({
-			game: this.game,
-			x: this.game.world.centerX,
-			y: this.game.world.centerY,
-			asset: 'block'
-		});
-
 		//this.game.add.existing(pallet);
 
-  //       this.bmpText = this.game.add.bitmapText(10, 100, 'carrier_command','Drag me around !',34);
-  //       this.bmpText.inputEnabled = true;
+        this.bmpText = this.game.add.bitmapText(10, 100, 'carrier_command','Drag me around !',34);
+        this.bmpText.inputEnabled = true;
         
-  //       let button = this.game.add.button(20, 20, 'button', this.actionOnClick, this, 2, 1, 0);
-  //       button.input.enableDrag();
+        let button = this.game.add.button(20, 20, 'button', this.actionOnClick, this, 2, 1, 0);
+        button.input.enableDrag();
+
+        let pallet = new Pallet({ game: this.game, x: this.game.world.centerX, y:this.game.world.centerY, key: 'sprite'});
     }
  
     update() {
@@ -51,9 +43,6 @@ class Main extends Phaser.State {
         blockSprite.inputEnabled = true;
         //  Allow dragging - the 'true' parameter will make the sprite snap to the center
         blockSprite.input.enableDrag(true);
-
-        // let pallet = new Pallet();
-        //pallet.createPallet();
     }
  
 };
