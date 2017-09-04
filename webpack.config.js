@@ -9,7 +9,7 @@ var p2 = path.join(phaserModule, 'build/custom/p2.js')
 
 module.exports = {
     entry: {
-        app: './src/js/app.js'
+        app: './src/js/App.js'
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -21,6 +21,9 @@ module.exports = {
         path: path.resolve(__dirname, 'dist')
     },
     module: {
+        loaders: [
+            { test: /\.jsx?$/, loader: 'babel-loader', exclude: /node_modules/, query: { presets: ['es2015'] }},
+        ],
         rules: [
             { test: /\.css$/, use: [ 'style-loader', 'css-loader'] },
             { test: /pixi\.js/, use: ['expose-loader?PIXI'] },
@@ -29,6 +32,10 @@ module.exports = {
         ]
     },
     resolve: {
+        modules: [
+            path.resolve('./src/js'),
+            path.resolve('./node_modules')
+        ],
         alias: {
             'phaser': phaser,
             'pixi': pixi,

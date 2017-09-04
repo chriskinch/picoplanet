@@ -2,6 +2,8 @@
  * Main styles
  */
 
- body {
- 	background: red;
- }
+body, html {
+	padding: 0;
+	margin: 0;
+	background: #444;
+}
